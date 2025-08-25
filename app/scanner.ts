@@ -36,6 +36,12 @@ export class Scanner {
             case ')':
                 this.addToken(TokenType.RIGHT_PAREN);
                 break;
+            case '{':
+                this.addToken(TokenType.LEFT_BRACE);
+                break;
+            case '}':
+                this.addToken(TokenType.RIGHT_BRACE);
+                break;
             case ' ':
             case '\r':
             case '\t':
