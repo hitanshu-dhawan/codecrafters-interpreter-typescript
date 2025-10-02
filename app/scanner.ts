@@ -9,6 +9,25 @@ export class Scanner {
     private line: number = 1;
     private hadError: boolean = false;
 
+    private static keywords: Map<string, TokenType> = new Map([
+        ["and", TokenType.AND],
+        ["class", TokenType.CLASS],
+        ["else", TokenType.ELSE],
+        ["false", TokenType.FALSE],
+        ["fun", TokenType.FUN],
+        ["for", TokenType.FOR],
+        ["if", TokenType.IF],
+        ["nil", TokenType.NIL],
+        ["or", TokenType.OR],
+        ["print", TokenType.PRINT],
+        ["return", TokenType.RETURN],
+        ["super", TokenType.SUPER],
+        ["this", TokenType.THIS],
+        ["true", TokenType.TRUE],
+        ["var", TokenType.VAR],
+        ["while", TokenType.WHILE],
+    ]);
+
     constructor(source: string) {
         this.source = source;
     }
@@ -101,6 +120,8 @@ export class Scanner {
             default:
                 if (this.isDigit(c)) {
                     this.number();
+                } else if (this.isAlpha(c)) {
+                    this.identifier();
                 } else {
                     this.error(`Unexpected character: ${c}`);
                 }
@@ -182,5 +203,25 @@ export class Scanner {
     private peekNext(): string {
         if (this.current + 1 >= this.source.length) return '\0';
         return this.source.charAt(this.current + 1);
+    }
+
+    private isAlpha(c: string): boolean {
+        return (c >= 'a' && c <= 'z') ||
+            (c >= 'A' && c <= 'Z') ||
+            c === '_';
+    }
+
+    private isAlphaNumeric(c: string): boolean {
+        return this.isAlpha(c) || this.isDigit(c);
+    }
+
+    private identifier(): void {
+        while (this.isAlphaNumeric(this.peek())) {
+            this.advance();
+        }
+
+        const text = this.source.substring(this.start, this.current);
+        const type = Scanner.keywords.get(text) || TokenType.IDENTIFIER;
+        this.addToken(type);
     }
 }
