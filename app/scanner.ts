@@ -71,6 +71,12 @@ export class Scanner {
             case '=':
                 this.addToken(this.match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL);
                 break;
+            case '<':
+                this.addToken(this.match('=') ? TokenType.LESS_EQUAL : TokenType.LESS);
+                break;
+            case '>':
+                this.addToken(this.match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER);
+                break;
             case ' ':
             case '\r':
             case '\t':
