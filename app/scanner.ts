@@ -95,6 +95,9 @@ export class Scanner {
             case '\n':
                 this.line++;
                 break;
+            case '"':
+                this.string();
+                break;
             default:
                 this.error(`Unexpected character: ${c}`);
                 break;
@@ -121,6 +124,25 @@ export class Scanner {
     private addToken(type: TokenType, literal: any = null): void {
         const text = this.source.substring(this.start, this.current);
         this.tokens.push(new Token(type, text, literal));
+    }
+
+    private string(): void {
+        while (this.peek() !== '"' && !this.isAtEnd()) {
+            if (this.peek() === '\n') this.line++;
+            this.advance();
+        }
+
+        if (this.isAtEnd()) {
+            this.error("Unterminated string.");
+            return;
+        }
+
+        // The closing ".
+        this.advance();
+
+        // Trim the surrounding quotes.
+        const value = this.source.substring(this.start + 1, this.current - 1);
+        this.addToken(TokenType.STRING, value);
     }
 
     private error(message: string): void {
