@@ -99,7 +99,11 @@ export class Scanner {
                 this.string();
                 break;
             default:
-                this.error(`Unexpected character: ${c}`);
+                if (this.isDigit(c)) {
+                    this.number();
+                } else {
+                    this.error(`Unexpected character: ${c}`);
+                }
                 break;
         }
     }
@@ -148,5 +152,35 @@ export class Scanner {
     private error(message: string): void {
         console.error(`[line ${this.line}] Error: ${message}`);
         this.hadError = true;
+    }
+
+    private isDigit(c: string): boolean {
+        return c >= '0' && c <= '9';
+    }
+
+    private number(): void {
+        while (this.isDigit(this.peek())) {
+            this.advance();
+        }
+
+        // Look for a fractional part.
+        if (this.peek() === '.' && this.isDigit(this.peekNext())) {
+            // Consume the "."
+            this.advance();
+
+            while (this.isDigit(this.peek())) {
+                this.advance();
+            }
+        }
+
+        const value = parseFloat(this.source.substring(this.start, this.current));
+        // For integers, use .0 format; for decimals, parseFloat already normalizes trailing zeros
+        const literal = Number.isInteger(value) ? value.toFixed(1) : value.toString();
+        this.addToken(TokenType.NUMBER, literal);
+    }
+
+    private peekNext(): string {
+        if (this.current + 1 >= this.source.length) return '\0';
+        return this.source.charAt(this.current + 1);
     }
 }
