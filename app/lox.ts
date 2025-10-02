@@ -85,34 +85,17 @@ class Lox {
      * @param line The line number where the error occurred
      * @param message The error message
      */
-    static error(line: number, message: string): void;
-    /**
-     * Reports an error for a specific token.
-     * @param token The token where the error occurred
-     * @param message The error message
-     */
-    static error(token: Token, message: string): void;
-    static error(lineOrToken: number | Token, message: string): void {
-        if (typeof lineOrToken === 'number') {
-            this.report(lineOrToken, "", message);
-        } else {
-            const token = lineOrToken;
-            if (token.type === TokenType.EOF) {
-                this.report(token.line, " at end", message);
-            } else {
-                this.report(token.line, ` at '${token.lexeme}'`, message);
-            }
-        }
+    static error(line: number, message: string): void {
+        this.report(line, message);
     }
 
     /**
      * Reports an error with detailed location information.
      * @param line The line number where the error occurred
-     * @param where Additional location context
      * @param message The error message
      */
-    private static report(line: number, where: string, message: string): void {
-        console.error(`[line ${line}] Error${where}: ${message}`);
+    private static report(line: number, message: string): void {
+        console.error(`[line ${line}] Error: ${message}`);
         this.hadError = true;
     }
 
