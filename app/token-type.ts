@@ -1,6 +1,10 @@
+/**
+ * Enumeration of all token types in the Lox programming language.
+ * Represents the different categories of lexical elements that can be recognized by the scanner.
+ */
 enum TokenType {
 
-    // Single-character tokens
+    // Single-character tokens.
     LEFT_PAREN = "LEFT_PAREN",
     RIGHT_PAREN = "RIGHT_PAREN",
     LEFT_BRACE = "LEFT_BRACE",
@@ -13,7 +17,7 @@ enum TokenType {
     SLASH = "SLASH",
     STAR = "STAR",
 
-    // One or two character tokens
+    // One or two character tokens.
     BANG = "BANG",
     BANG_EQUAL = "BANG_EQUAL",
     EQUAL = "EQUAL",
@@ -23,12 +27,12 @@ enum TokenType {
     LESS = "LESS",
     LESS_EQUAL = "LESS_EQUAL",
 
-    // Literals
+    // Literals.
     IDENTIFIER = "IDENTIFIER",
     STRING = "STRING",
     NUMBER = "NUMBER",
 
-    // Keywords
+    // Keywords.
     AND = "AND",
     CLASS = "CLASS",
     ELSE = "ELSE",
@@ -46,7 +50,6 @@ enum TokenType {
     VAR = "VAR",
     WHILE = "WHILE",
 
-    // Special token
     EOF = "EOF"
 }
 

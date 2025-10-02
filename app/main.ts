@@ -1,34 +1,7 @@
-import fs from "fs";
-import { Scanner } from "./scanner.js";
+import Lox from "./lox.js";
 
-const args: string[] = process.argv.slice(2); // Skip the first two arguments (node path and script path)
+// Get command line arguments (skip node path and script path)
+const args: string[] = process.argv.slice(2);
 
-if (args.length < 2) {
-  console.error("Usage: ./your_program.sh tokenize <filename>");
-  process.exit(1);
-}
-
-const command: string = args[0];
-
-if (command !== "tokenize") {
-  console.error(`Usage: Unknown command: ${command}`);
-  process.exit(1);
-}
-
-const filename: string = args[1];
-
-const fileContent: string = fs.readFileSync(filename, "utf8");
-
-// Create scanner and scan tokens
-const scanner = new Scanner(fileContent);
-const tokens = scanner.scanTokens();
-
-// Print tokens in the required format
-for (const token of tokens) {
-  console.log(token.toString());
-}
-
-// Exit with error code if there were lexical errors
-if (scanner.hadErrors()) {
-  process.exit(65);
-}
+// Call the main function from Lox class
+Lox.main(args);
