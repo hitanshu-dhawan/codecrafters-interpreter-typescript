@@ -90,7 +90,7 @@ export class Scanner {
             case ' ':
             case '\r':
             case '\t':
-                // Ignore whitespace
+                // Ignore whitespace.
                 break;
             case '\n':
                 this.line++;
