@@ -27,3 +27,8 @@ const tokens = scanner.scanTokens();
 for (const token of tokens) {
   console.log(token.toString());
 }
+
+// Exit with error code if there were lexical errors
+if (scanner.hadErrors()) {
+  process.exit(65);
+}

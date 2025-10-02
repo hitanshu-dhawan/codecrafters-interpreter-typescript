@@ -1,6 +1,6 @@
-import { TokenType } from "./token-type.js";
+import TokenType from "./token-type.js";
 
-export class Token {
+class Token {
     type: TokenType;
     lexeme: string;
     literal: any;
@@ -15,3 +15,5 @@ export class Token {
         return `${this.type} ${this.lexeme} ${this.literal}`;
     }
 }
+
+export default Token;

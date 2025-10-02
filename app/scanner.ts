@@ -1,5 +1,5 @@
-import { Token } from "./token.js";
-import { TokenType } from "./token-type.js";
+import Token from "./token.js";
+import TokenType from "./token-type.js";
 
 export class Scanner {
     private source: string;
@@ -7,6 +7,7 @@ export class Scanner {
     private start: number = 0;
     private current: number = 0;
     private line: number = 1;
+    private hadError: boolean = false;
 
     constructor(source: string) {
         this.source = source;
@@ -20,6 +21,10 @@ export class Scanner {
 
         this.tokens.push(new Token(TokenType.EOF, "", null));
         return this.tokens;
+    }
+
+    hadErrors(): boolean {
+        return this.hadError;
     }
 
     private isAtEnd(): boolean {
@@ -69,7 +74,7 @@ export class Scanner {
                 this.line++;
                 break;
             default:
-                // For now, ignore unknown characters
+                this.error(`Unexpected character: ${c}`);
                 break;
         }
     }
@@ -81,5 +86,10 @@ export class Scanner {
     private addToken(type: TokenType, literal: any = null): void {
         const text = this.source.substring(this.start, this.current);
         this.tokens.push(new Token(type, text, literal));
+    }
+
+    private error(message: string): void {
+        console.error(`[line ${this.line}] Error: ${message}`);
+        this.hadError = true;
     }
 }
