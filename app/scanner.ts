@@ -65,6 +65,9 @@ export class Scanner {
             case '*':
                 this.addToken(TokenType.STAR);
                 break;
+            case '=':
+                this.addToken(this.match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL);
+                break;
             case ' ':
             case '\r':
             case '\t':
@@ -81,6 +84,14 @@ export class Scanner {
 
     private advance(): string {
         return this.source.charAt(this.current++);
+    }
+
+    private match(expected: string): boolean {
+        if (this.isAtEnd()) return false;
+        if (this.source.charAt(this.current) !== expected) return false;
+
+        this.current++;
+        return true;
     }
 
     private addToken(type: TokenType, literal: any = null): void {
