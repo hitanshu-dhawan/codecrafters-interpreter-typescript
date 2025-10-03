@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import Scanner from './scanner.js';
+import Parser from './parser.js';
+import AstPrinter from './ast-printer.js';
 import Token from './token.js';
 import TokenType from './token-type.js';
 
@@ -31,6 +33,12 @@ class Lox {
         if (command === "tokenize") {
             if (args.length !== 2) {
                 console.log("Usage: ./your_program.sh tokenize <filename>");
+                process.exit(64);
+            }
+            this.runFile(args[1], command);
+        } else if (command === "parse") {
+            if (args.length !== 2) {
+                console.log("Usage: ./your_program.sh parse <filename>");
                 process.exit(64);
             }
             this.runFile(args[1], command);
@@ -70,12 +78,23 @@ class Lox {
      * @param command The command to execute
      */
     private static run(source: string, command: string): void {
+
+        // Scan the source code into tokens
         const scanner = new Scanner(source);
         const tokens = scanner.scanTokens();
 
         if (command === "tokenize") {
             for (const token of tokens) {
                 console.log(token.toString());
+            }
+        } else if (command === "parse") {
+
+            // Parse the tokens into an AST
+            const parser = new Parser(tokens);
+            const expression = parser.parse();
+
+            if (expression) {
+                console.log(new AstPrinter().print(expression));
             }
         }
     }
@@ -85,17 +104,34 @@ class Lox {
      * @param line The line number where the error occurred
      * @param message The error message
      */
-    static error(line: number, message: string): void {
-        this.report(line, message);
+    static error(line: number, message: string): void;
+    /**
+     * Reports an error at a given token.
+     * @param token The token where the error occurred
+     * @param message The error message
+     */
+    static error(token: Token, message: string): void;
+    static error(lineOrToken: number | Token, message: string): void {
+        if (lineOrToken instanceof Token) {
+            const token = lineOrToken;
+            if (token.type === TokenType.EOF) {
+                this.report(token.line, " at end", message);
+            } else {
+                this.report(token.line, ` at '${token.lexeme}'`, message);
+            }
+        } else {
+            this.report(lineOrToken, "", message);
+        }
     }
 
     /**
      * Reports an error with detailed location information.
      * @param line The line number where the error occurred
+     * @param where Additional location context (e.g., "", " at end", " at 'token'")
      * @param message The error message
      */
-    private static report(line: number, message: string): void {
-        console.error(`[line ${line}] Error: ${message}`);
+    private static report(line: number, where: string, message: string): void {
+        console.error(`[line ${line}] Error${where}: ${message}`);
         this.hadError = true;
     }
 
