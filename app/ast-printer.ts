@@ -35,12 +35,6 @@ class AstPrinter implements ExprVisitor<string> {
         if (expr.value === null) {
             return "nil";
         }
-        if (typeof expr.value === "boolean") {
-            return expr.value.toString();
-        }
-        if (typeof expr.value === "string") {
-            return `"${expr.value}"`;
-        }
         return expr.value.toString();
     }
 
