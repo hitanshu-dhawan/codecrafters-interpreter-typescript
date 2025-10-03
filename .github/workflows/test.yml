@@ -1,0 +1,62 @@
+name: Run Tests
+
+# Trigger the workflow on push to any branch and pull requests
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+
+# Add permissions for the workflow
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Checkout the repository code
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    # Set up Bun runtime
+    - name: Set up Bun
+      uses: oven-sh/setup-bun@v1
+      with:
+        bun-version: latest
+    
+    # Install dependencies (if any)
+    - name: Install dependencies
+      run: bun install
+    
+    # Run TypeScript type checking
+    - name: Type check
+      run: bun run tsc --noEmit
+    
+    # Run all test suites
+    - name: Run tests
+      run: bun test
+    
+    # Run specific test scripts
+    - name: Run scanner tests
+      run: bun run test:scanner
+    
+    - name: Run parser tests
+      run: bun run test:parser
+    
+    # Run the main test runner
+    - name: Run all tests via test runner
+      run: bun run test
+    
+    # Upload test results as artifacts (optional)
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          tests/
+          *.log
