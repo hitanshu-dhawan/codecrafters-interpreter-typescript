@@ -3,7 +3,10 @@
   "description": "Build your own Interpreter challenge, from CodeCrafters",
   "type": "module",
   "scripts": {
-    "dev": "bun run app/main.ts"
+    "dev": "bun run app/main.ts",
+    "test": "bun run tests/run-tests.ts",
+    "test:scanner": "bun run tests/scanner.test.ts",
+    "test:parser": "bun run tests/parser.test.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"
