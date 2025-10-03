@@ -1,5 +1,5 @@
-import Expr, { Binary, Grouping, Literal, Unary } from './expr.js';
 import type { ExprVisitor } from './expr.js';
+import Expr, { Binary, Grouping, Literal, Unary } from './expr.js';
 
 /**
  * AST printer that implements the visitor pattern to convert
