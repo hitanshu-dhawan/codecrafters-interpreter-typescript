@@ -1,5 +1,4 @@
-import type { ExprVisitor } from './expr.js';
-import Expr, { Binary, Grouping, Literal, Unary } from './expr.js';
+import Expr from './expr.js';
 import Token from './token.js';
 import TokenType from './token-type.js';
 import Lox from './lox.js';
@@ -20,7 +19,7 @@ export class RuntimeError extends Error {
 /**
  * Interpreter that evaluates expressions using the visitor pattern.
  */
-class Interpreter implements ExprVisitor<any> {
+class Interpreter implements Expr.Visitor<any> {
 
     /**
      * Interpret an expression and return its value.
@@ -40,21 +39,21 @@ class Interpreter implements ExprVisitor<any> {
     /**
      * Visit a literal expression and return its value.
      */
-    visitLiteralExpr(expr: Literal): any {
+    visitLiteralExpr(expr: Expr.Literal): any {
         return expr.value;
     }
 
     /**
      * Visit a grouping expression and evaluate the inner expression.
      */
-    visitGroupingExpr(expr: Grouping): any {
+    visitGroupingExpr(expr: Expr.Grouping): any {
         return this.evaluate(expr.expression);
     }
 
     /**
      * Visit a unary expression and apply the unary operator.
      */
-    visitUnaryExpr(expr: Unary): any {
+    visitUnaryExpr(expr: Expr.Unary): any {
         const right = this.evaluate(expr.right);
 
         switch (expr.operator.type) {
@@ -72,7 +71,7 @@ class Interpreter implements ExprVisitor<any> {
     /**
      * Visit a binary expression and apply the binary operator.
      */
-    visitBinaryExpr(expr: Binary): any {
+    visitBinaryExpr(expr: Expr.Binary): any {
         const left = this.evaluate(expr.left);
         const right = this.evaluate(expr.right);
 

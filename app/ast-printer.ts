@@ -1,11 +1,10 @@
-import type { ExprVisitor } from './expr.js';
-import Expr, { Binary, Grouping, Literal, Unary } from './expr.js';
+import Expr from './expr.js';
 
 /**
  * AST printer that implements the visitor pattern to convert
  * expression trees into string representations.
  */
-class AstPrinter implements ExprVisitor<string> {
+class AstPrinter implements Expr.Visitor<string> {
 
     /**
      * Print an expression as a string.
@@ -17,21 +16,21 @@ class AstPrinter implements ExprVisitor<string> {
     /**
      * Visit a binary expression and format it as "(operator left right)".
      */
-    visitBinaryExpr(expr: Binary): string {
+    visitBinaryExpr(expr: Expr.Binary): string {
         return this.parenthesize(expr.operator.lexeme, expr.left, expr.right);
     }
 
     /**
      * Visit a grouping expression and format it as "(group expression)".
      */
-    visitGroupingExpr(expr: Grouping): string {
+    visitGroupingExpr(expr: Expr.Grouping): string {
         return this.parenthesize("group", expr.expression);
     }
 
     /**
      * Visit a literal expression and return its string representation.
      */
-    visitLiteralExpr(expr: Literal): string {
+    visitLiteralExpr(expr: Expr.Literal): string {
         if (expr.value === null) {
             return "nil";
         }
@@ -46,7 +45,7 @@ class AstPrinter implements ExprVisitor<string> {
     /**
      * Visit a unary expression and format it as "(operator operand)".
      */
-    visitUnaryExpr(expr: Unary): string {
+    visitUnaryExpr(expr: Expr.Unary): string {
         return this.parenthesize(expr.operator.lexeme, expr.right);
     }
 
