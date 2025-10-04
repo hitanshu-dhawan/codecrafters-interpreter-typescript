@@ -113,7 +113,9 @@ class Lox {
                 // Evaluate the AST
                 const interpreter = new Interpreter();
                 const result = interpreter.interpret(expression);
-                console.log(interpreter.stringify(result));
+                if (result !== undefined) {
+                    console.log(interpreter.stringify(result));
+                }
             }
         }
     }

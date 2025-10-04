@@ -31,6 +31,7 @@ class Interpreter implements ExprVisitor<any> {
         } catch (error) {
             if (error instanceof RuntimeError) {
                 Lox.runtimeError(error);
+                return undefined;
             }
             throw error;
         }
