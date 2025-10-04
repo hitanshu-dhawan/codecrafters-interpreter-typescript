@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import Scanner from './scanner.js';
 import Parser from './parser.js';
 import AstPrinter from './ast-printer.js';
+import Interpreter, { RuntimeError } from './interpreter.js';
 import Token from './token.js';
 import TokenType from './token-type.js';
 
@@ -39,6 +40,12 @@ class Lox {
         } else if (command === "parse") {
             if (args.length !== 2) {
                 console.log("Usage: ./your_program.sh parse <filename>");
+                process.exit(64);
+            }
+            this.runFile(args[1], command);
+        } else if (command === "evaluate") {
+            if (args.length !== 2) {
+                console.log("Usage: ./your_program.sh evaluate <filename>");
                 process.exit(64);
             }
             this.runFile(args[1], command);
@@ -96,6 +103,18 @@ class Lox {
             if (expression) {
                 console.log(new AstPrinter().print(expression));
             }
+        } else if (command === "evaluate") {
+
+            // Parse the tokens into an AST
+            const parser = new Parser(tokens);
+            const expression = parser.parse();
+
+            if (expression) {
+                // Evaluate the AST
+                const interpreter = new Interpreter();
+                const result = interpreter.interpret(expression);
+                console.log(interpreter.stringify(result));
+            }
         }
     }
 
@@ -122,6 +141,15 @@ class Lox {
         } else {
             this.report(lineOrToken, "", message);
         }
+    }
+
+    /**
+     * Reports a runtime error.
+     * @param error The runtime error that occurred
+     */
+    static runtimeError(error: RuntimeError): void {
+        console.error(`${error.message}\n[line ${error.token.line}]`);
+        this.hadRuntimeError = true;
     }
 
     /**

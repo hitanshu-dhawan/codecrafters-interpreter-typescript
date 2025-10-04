@@ -44,8 +44,15 @@ class Token {
      * @returns A formatted string representation of the token
      */
     toString(): string {
-        return `${this.type} ${this.lexeme} ${this.literal}`;
+        let literalStr = this.literal;
+
+        if (typeof this.literal === 'number' && Number.isInteger(this.literal)) {
+            literalStr = `${this.literal}.0`;
+        }
+
+        return `${this.type} ${this.lexeme} ${literalStr}`;
     }
+
 }
 
 export default Token;

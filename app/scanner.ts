@@ -204,9 +204,7 @@ class Scanner {
         }
 
         const value = parseFloat(this.source.substring(this.start, this.current));
-        // For integers, use X.0 format; for decimals, keep as-is
-        const literal = Number.isInteger(value) ? value.toFixed(1) : value;
-        this.addToken(TokenType.NUMBER, literal);
+        this.addToken(TokenType.NUMBER, value);
     }
 
     /**
