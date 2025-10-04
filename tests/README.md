@@ -42,16 +42,20 @@ Tests the syntax analysis phase, verifying that the parser correctly builds Abst
 ### 3. Interpreter Tests (`interpreter.test.ts`)
 Tests the evaluation phase, verifying that expressions are correctly interpreted and evaluated.
 
-**Covered functionality:**
+**Covered test stages:**
 - ✅ **IZ6**: Literal evaluation (booleans, nil, numbers, strings)
-- ✅ Boolean logic operations
-- ✅ Arithmetic operations with proper precedence
-- ✅ String concatenation
-- ✅ Comparison operations
-- ✅ Equality testing
-- ✅ Unary operations (negation, logical not)
-- ✅ Grouped expressions
-- ✅ Complex nested expressions
+- ✅ **LV1**: String and number literal evaluation
+- ✅ **OQ9**: Parenthesized expression evaluation
+- ✅ **DC1**: Unary operators (negation `-`, logical not `!`)
+- ✅ **BP3**: Arithmetic operators - multiplication & division
+- ✅ **JY2**: Arithmetic operators - addition & subtraction  
+- ✅ **JX8**: String concatenation
+- ✅ **ET4**: Relational operators (`<`, `<=`, `>`, `>=`)
+- ✅ **HW7**: Equality operators (`==`, `!=`)
+- ✅ **GJ9**: Runtime errors for unary operators
+- ✅ **YU6**: Runtime errors for binary operators (arithmetic)
+- ✅ **CQ1**: Runtime errors for binary operators (addition)
+- ✅ **IB5**: Runtime errors for relational operators
 
 ## Running Tests
 
@@ -143,12 +147,3 @@ Error messages should follow the format:
 ```
 [line X] Error: Description
 ```
-
-## Contributing
-
-When adding new tests:
-1. Follow the existing naming convention
-2. Include both positive and negative test cases
-3. Test edge cases and error conditions
-4. Ensure tests match the CodeCrafters specification exactly
-5. Update this README if adding new test categories

@@ -2,6 +2,7 @@
 
 import { runScannerTests } from './scanner.test.js';
 import { runParserTests } from './parser.test.js';
+import { runInterpreterTests } from './interpreter.test.js';
 
 /**
  * Main test runner that executes all test suites
@@ -17,6 +18,10 @@ async function main() {
 
         // Run parser tests  
         await runParserTests();
+        console.log("\n" + "=".repeat(50));
+
+        // Run interpreter tests
+        await runInterpreterTests();
         console.log("\n" + "=".repeat(50));
 
         console.log("\n🎉 All test suites completed successfully!");

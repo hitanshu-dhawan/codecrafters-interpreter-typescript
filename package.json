@@ -6,7 +6,8 @@
     "dev": "bun run app/main.ts",
     "test": "bun run tests/run-tests.ts",
     "test:scanner": "bun run tests/scanner.test.ts",
-    "test:parser": "bun run tests/parser.test.ts"
+    "test:parser": "bun run tests/parser.test.ts",
+    "test:interpreter": "bun run tests/interpreter.test.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"
