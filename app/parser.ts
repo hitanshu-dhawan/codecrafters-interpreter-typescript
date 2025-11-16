@@ -1,6 +1,7 @@
 import Token from './token.js';
 import TokenType from './token-type.js';
 import Expr from './expr.js';
+import Stmt from './stmt.js';
 import Lox from './lox.js';
 
 /**
@@ -30,7 +31,7 @@ class Parser {
      * Parse the tokens and return an expression.
      * Returns null if there was a syntax error.
      */
-    parse(): Expr | null {
+    parseExpression(): Expr | null {
         try {
             return this.expression();
         } catch (error) {
@@ -42,11 +43,90 @@ class Parser {
     }
 
     /**
+     * Parse the tokens and return a list of statements.
+     */
+    parse(): Stmt[] {
+        const statements: Stmt[] = [];
+        while (!this.isAtEnd()) {
+            const stmt = this.declaration();
+            if (stmt !== null) {
+                statements.push(stmt);
+            }
+        }
+        return statements;
+    }
+
+    /**
      * Parse an expression.
-     * Expression → equality
      */
     private expression(): Expr {
+        // return this.assignment();
         return this.equality();
+    }
+
+    /**
+     * Parse a declaration.
+     * declaration → classDecl | funDecl | varDecl | statement
+     */
+    private declaration(): Stmt | null {
+        try {
+            // if (this.match(TokenType.CLASS))
+            //     return this.classDeclaration();
+            // if (this.match(TokenType.FUN))
+            //     return this.function("function");
+            // if (this.match(TokenType.VAR))
+            //     return this.varDeclaration();
+
+            return this.statement();
+        } catch (error) {
+            if (error instanceof ParseError) {
+                // Move to the next declaration.
+                this.synchronize();
+                return null;
+            }
+            throw error;
+        }
+    }
+
+    /**
+     * Parse a statement.
+     * statement → exprStmt | forStmt | ifStmt | printStmt | returnStmt | whileStmt | block
+     */
+    private statement(): Stmt {
+        // if (this.match(TokenType.FOR))
+        //     return this.forStatement();
+        // if (this.match(TokenType.IF))
+        //     return this.ifStatement();
+        if (this.match(TokenType.PRINT))
+            return this.printStatement();
+        // if (this.match(TokenType.RETURN))
+        //     return this.returnStatement();
+        // if (this.match(TokenType.WHILE))
+        //     return this.whileStatement();
+        // if (this.match(TokenType.LEFT_BRACE))
+        //     return new Stmt.Block(this.block());
+
+        return this.expressionStatement();
+    }
+
+    /**
+     * Parse a print statement.
+     * printStmt → "print" expression ";"
+     */
+    private printStatement(): Stmt {
+        const value = this.expression();
+        this.consume(TokenType.SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Print(value);
+    }
+
+    /**
+     * Parse an expression statement.
+     * exprStmt → expression ";"
+     */
+    private expressionStatement(): Stmt {
+        const expr = this.expression();
+        this.consume(TokenType.SEMICOLON, "Expect ';' after expression.");
+        return new Stmt.Expression(expr);
     }
 
     /**
@@ -222,6 +302,33 @@ class Parser {
     private error(token: Token, message: string): ParseError {
         Lox.error(token, message);
         return new ParseError(message);
+    }
+
+    /**
+     * Synchronize the parser after an error by discarding tokens until
+     * we reach a statement boundary.
+     */
+    private synchronize(): void {
+        this.advance();
+
+        while (!this.isAtEnd()) {
+            if (this.previous().type === TokenType.SEMICOLON)
+                return;
+
+            switch (this.peek().type) {
+                case TokenType.CLASS:
+                case TokenType.FUN:
+                case TokenType.VAR:
+                case TokenType.FOR:
+                case TokenType.IF:
+                case TokenType.WHILE:
+                case TokenType.PRINT:
+                case TokenType.RETURN:
+                    return;
+            }
+
+            this.advance();
+        }
     }
 
 }

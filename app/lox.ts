@@ -49,6 +49,12 @@ class Lox {
                 process.exit(64);
             }
             this.runFile(args[1], command);
+        } else if (command === "run") {
+            if (args.length !== 2) {
+                console.log("Usage: ./your_program.sh run <filename>");
+                process.exit(64);
+            }
+            this.runFile(args[1], command);
         } else {
             console.log(`Unknown command: ${command}`);
             process.exit(64);
@@ -98,7 +104,7 @@ class Lox {
 
             // Parse the tokens into an AST
             const parser = new Parser(tokens);
-            const expression = parser.parse();
+            const expression = parser.parseExpression();
 
             if (expression) {
                 console.log(new AstPrinter().print(expression));
@@ -107,16 +113,28 @@ class Lox {
 
             // Parse the tokens into an AST
             const parser = new Parser(tokens);
-            const expression = parser.parse();
+            const expression = parser.parseExpression();
 
             if (expression) {
                 // Evaluate the AST
                 const interpreter = new Interpreter();
-                const result = interpreter.interpret(expression);
+                const result = interpreter.interpretExpression(expression);
                 if (result !== undefined) {
                     console.log(interpreter.stringify(result));
                 }
             }
+        } else if (command === "run") {
+
+            // Parse the tokens into statements
+            const parser = new Parser(tokens);
+            const statements = parser.parse();
+
+            // Stop if there was a syntax error
+            if (this.hadError) return;
+
+            // Interpret the statements
+            const interpreter = new Interpreter();
+            interpreter.interpret(statements);
         }
     }
 

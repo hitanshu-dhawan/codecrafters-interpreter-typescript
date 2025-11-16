@@ -1,4 +1,5 @@
 import Expr from './expr.js';
+import Stmt from './stmt.js';
 import Token from './token.js';
 import TokenType from './token-type.js';
 import Lox from './lox.js';
@@ -19,12 +20,12 @@ export class RuntimeError extends Error {
 /**
  * Interpreter that evaluates expressions using the visitor pattern.
  */
-class Interpreter implements Expr.Visitor<any> {
+class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
 
     /**
      * Interpret an expression and return its value.
      */
-    interpret(expression: Expr): any {
+    interpretExpression(expression: Expr): any {
         try {
             return this.evaluate(expression);
         } catch (error) {
@@ -33,6 +34,23 @@ class Interpreter implements Expr.Visitor<any> {
                 return undefined;
             }
             throw error;
+        }
+    }
+
+    /**
+     * Interpret a list of statements.
+     */
+    interpret(statements: Stmt[]): void {
+        try {
+            for (const statement of statements) {
+                this.execute(statement);
+            }
+        } catch (error) {
+            if (error instanceof RuntimeError) {
+                Lox.runtimeError(error);
+            } else {
+                throw error;
+            }
         }
     }
 
@@ -116,6 +134,21 @@ class Interpreter implements Expr.Visitor<any> {
     }
 
     /**
+     * Visit an expression statement and evaluate the expression.
+     */
+    visitExpressionStmt(stmt: Stmt.Expression): void {
+        this.evaluate(stmt.expression);
+    }
+
+    /**
+     * Visit a print statement and print the evaluated expression.
+     */
+    visitPrintStmt(stmt: Stmt.Print): void {
+        const value = this.evaluate(stmt.expression);
+        console.log(this.stringify(value));
+    }
+
+    /**
      * Check if an operand is a number, throw error if not.
      */
     private checkNumberOperand(operator: Token, operand: any): void {
@@ -156,6 +189,13 @@ class Interpreter implements Expr.Visitor<any> {
      */
     private evaluate(expr: Expr): any {
         return expr.accept(this);
+    }
+
+    /**
+     * Execute a statement.
+     */
+    private execute(stmt: Stmt): void {
+        stmt.accept(this);
     }
 
     /**
