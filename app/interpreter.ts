@@ -3,6 +3,7 @@ import Stmt from './stmt.js';
 import Token from './token.js';
 import TokenType from './token-type.js';
 import Lox from './lox.js';
+import Environment from './environment.js';
 
 /**
  * Runtime error class for interpreter errors.
@@ -21,6 +22,12 @@ export class RuntimeError extends Error {
  * Interpreter that evaluates expressions using the visitor pattern.
  */
 class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
+
+    /**
+     * The environment that stores variable bindings.
+     * This is the global environment for the interpreter.
+     */
+    private environment = new Environment();
 
     /**
      * Interpret an expression and return its value.
@@ -53,6 +60,8 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
             }
         }
     }
+
+    // #region Expr.Visitor methods
 
     /**
      * Visit a literal expression and return its value.
@@ -134,6 +143,17 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
     }
 
     /**
+     * Visit a variable expression and return its value from the environment.
+     */
+    visitVariableExpr(expr: Expr.Variable): any {
+        return this.environment.get(expr.name);
+    }
+
+    // #endregion
+
+    // #region Stmt.Visitor methods
+
+    /**
      * Visit an expression statement and evaluate the expression.
      */
     visitExpressionStmt(stmt: Stmt.Expression): void {
@@ -147,6 +167,21 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
         const value = this.evaluate(stmt.expression);
         console.log(this.stringify(value));
     }
+
+    /**
+     * Visit a variable declaration statement.
+     * Evaluates the initializer (if present) and stores the variable in the environment.
+     */
+    visitVarStmt(stmt: Stmt.Var): void {
+        let value: any = null;
+        if (stmt.initializer !== null) {
+            value = this.evaluate(stmt.initializer);
+        }
+
+        this.environment.define(stmt.name.lexeme, value);
+    }
+
+    // #endregion
 
     /**
      * Check if an operand is a number, throw error if not.
