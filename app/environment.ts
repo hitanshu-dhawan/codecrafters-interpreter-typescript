@@ -32,6 +32,27 @@ class Environment {
     }
 
     /**
+     * Assign a value to an existing variable.
+     * 
+     * Unlike define(), this method only works with variables that have already been
+     * declared. This enforces Lox's rule that variables must be declared before use.
+     * If the variable doesn't exist, throws a runtime error.
+     * 
+     * @param name The token containing the variable name to assign to
+     * @param value The new value to assign to the variable
+     * @throws RuntimeError if the variable is not defined
+     */
+    assign(name: Token, value: any): void {
+        if (this.values.has(name.lexeme)) {
+            this.values.set(name.lexeme, value);
+            return;
+        }
+
+        // Variable not found - throw a runtime error with the token for error reporting
+        throw new RuntimeError(name, `Undefined variable '${name.lexeme}'.`);
+    }
+
+    /**
      * Retrieve the value of a variable.
      * 
      * Looks up the variable by name in the environment's symbol table.

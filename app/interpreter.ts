@@ -149,6 +149,15 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
         return this.environment.get(expr.name);
     }
 
+    /**
+     * Visit an assignment expression, evaluate the value, and assign it to the variable.
+     */
+    visitAssignExpr(expr: Expr.Assign): any {
+        const value = this.evaluate(expr.value);
+        this.environment.assign(expr.name, value);
+        return value;
+    }
+
     // #endregion
 
     // #region Stmt.Visitor methods
