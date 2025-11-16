@@ -118,8 +118,8 @@ class Parser {
         //     return this.returnStatement();
         // if (this.match(TokenType.WHILE))
         //     return this.whileStatement();
-        // if (this.match(TokenType.LEFT_BRACE))
-        //     return new Stmt.Block(this.block());
+        if (this.match(TokenType.LEFT_BRACE))
+            return new Stmt.Block(this.block());
 
         return this.expressionStatement();
     }
@@ -132,6 +132,24 @@ class Parser {
         const value = this.expression();
         this.consume(TokenType.SEMICOLON, "Expect ';' after value.");
         return new Stmt.Print(value);
+    }
+
+    /**
+     * Parse a block of statements.
+     * block → "{" declaration* "}"
+     */
+    private block(): Stmt[] {
+        const statements: Stmt[] = [];
+
+        while (!this.check(TokenType.RIGHT_BRACE) && !this.isAtEnd()) {
+            const stmt = this.declaration();
+            if (stmt !== null) {
+                statements.push(stmt);
+            }
+        }
+
+        this.consume(TokenType.RIGHT_BRACE, "Expect '}' after block.");
+        return statements;
     }
 
     /**

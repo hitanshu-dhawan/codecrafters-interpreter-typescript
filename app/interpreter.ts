@@ -170,6 +170,34 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
     }
 
     /**
+     * Visit a block statement and execute it in a new environment.
+     */
+    visitBlockStmt(stmt: Stmt.Block): void {
+        this.executeBlock(stmt.statements, new Environment(this.environment));
+    }
+
+    /**
+     * Execute a block of statements in the given environment.
+     * Temporarily switches to the provided environment, executes all statements,
+     * then restores the previous environment (even if an error occurs).
+     * 
+     * @param statements The list of statements to execute
+     * @param environment The environment to use for executing the statements
+     */
+    executeBlock(statements: Stmt[], environment: Environment): void {
+        const previous = this.environment;
+        try {
+            this.environment = environment;
+
+            for (const statement of statements) {
+                this.execute(statement);
+            }
+        } finally {
+            this.environment = previous;
+        }
+    }
+
+    /**
      * Visit a print statement and print the evaluated expression.
      */
     visitPrintStmt(stmt: Stmt.Print): void {
