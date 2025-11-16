@@ -44,13 +44,6 @@ class Interpreter implements Expr.Visitor<any> {
     }
 
     /**
-     * Visit a grouping expression and evaluate the inner expression.
-     */
-    visitGroupingExpr(expr: Expr.Grouping): any {
-        return this.evaluate(expr.expression);
-    }
-
-    /**
      * Visit a unary expression and apply the unary operator.
      */
     visitUnaryExpr(expr: Expr.Unary): any {
@@ -113,6 +106,13 @@ class Interpreter implements Expr.Visitor<any> {
 
         // Unreachable
         return null;
+    }
+
+    /**
+     * Visit a grouping expression and evaluate the inner expression.
+     */
+    visitGroupingExpr(expr: Expr.Grouping): any {
+        return this.evaluate(expr.expression);
     }
 
     /**
