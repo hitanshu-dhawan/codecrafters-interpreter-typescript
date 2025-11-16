@@ -74,8 +74,8 @@ class Parser {
             //     return this.classDeclaration();
             // if (this.match(TokenType.FUN))
             //     return this.function("function");
-            // if (this.match(TokenType.VAR))
-            //     return this.varDeclaration();
+            if (this.match(TokenType.VAR))
+                return this.varDeclaration();
 
             return this.statement();
         } catch (error) {
@@ -86,6 +86,22 @@ class Parser {
             }
             throw error;
         }
+    }
+
+    /**
+     * Parse a variable declaration.
+     * varDecl → "var" IDENTIFIER ( "=" expression )? ";"
+     */
+    private varDeclaration(): Stmt {
+        const name = this.consume(TokenType.IDENTIFIER, "Expect variable name.");
+
+        let initializer: Expr | null = null;
+        if (this.match(TokenType.EQUAL)) {
+            initializer = this.expression();
+        }
+
+        this.consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+        return new Stmt.Var(name, initializer);
     }
 
     /**
@@ -209,7 +225,7 @@ class Parser {
 
     /**
      * Parse primary expressions: literals, identifiers, and grouped expressions.
-     * primary → "true" | "false" | "nil" | NUMBER | STRING | "(" expression ")"
+     * primary → "true" | "false" | "nil" | NUMBER | STRING | IDENTIFIER | "(" expression ")"
      */
     private primary(): Expr {
 
@@ -219,6 +235,10 @@ class Parser {
 
         if (this.match(TokenType.NUMBER, TokenType.STRING)) {
             return new Expr.Literal(this.previous().literal);
+        }
+
+        if (this.match(TokenType.IDENTIFIER)) {
+            return new Expr.Variable(this.previous());
         }
 
         if (this.match(TokenType.LEFT_PAREN)) {
