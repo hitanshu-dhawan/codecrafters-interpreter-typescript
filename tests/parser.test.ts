@@ -292,6 +292,79 @@ const parserTests = [
         expectedOutput: "",
         expectedExitCode: 65,
         expectedStderr: "[line 1] Error at '+': Expect expression."
+    },
+
+    {
+        name: "Empty grouping",
+        input: "()",
+        command: "./your_program.sh parse test.lox",
+        expectedOutput: "",
+        expectedExitCode: 65,
+        expectedStderr: "[line 1] Error at ')': Expect expression."
+    },
+    {
+        name: "Multiple operators without operands",
+        input: "* /",
+        command: "./your_program.sh parse test.lox",
+        expectedOutput: "",
+        expectedExitCode: 65,
+        expectedStderr: "[line 1] Error at '*': Expect expression."
+    },
+    {
+        name: "Complex nested grouping",
+        input: "(((42)))",
+        command: "./your_program.sh parse test.lox",
+        expectedOutput: "(group (group (group 42.0)))",
+        expectedExitCode: 0
+    },
+    {
+        name: "Mixed operators with correct precedence",
+        input: "2 + 3 * 4 - 5 / 2",
+        command: "./your_program.sh parse test.lox",
+        expectedOutput: "(- (+ 2.0 (* 3.0 4.0)) (/ 5.0 2.0))",
+        expectedExitCode: 0
+    },
+    {
+        name: "Unary operators with grouping",
+        input: "-(2 + 3)",
+        command: "./your_program.sh parse test.lox",
+        expectedOutput: "(- (group (+ 2.0 3.0)))",
+        expectedExitCode: 0
+    },
+    {
+        name: "Multiple comparison operators",
+        input: "1 < 2 == 3 > 4",
+        command: "./your_program.sh parse test.lox",
+        expectedOutput: "(== (< 1.0 2.0) (> 3.0 4.0))",
+        expectedExitCode: 0
+    },
+    {
+        name: "String concatenation with empty string",
+        input: '"hello" + ""',
+        command: "./your_program.sh parse test.lox",
+        expectedOutput: "(+ hello )",
+        expectedExitCode: 0
+    },
+    {
+        name: "Complex boolean expression",
+        input: "!true == false",
+        command: "./your_program.sh parse test.lox",
+        expectedOutput: "(== (! true) false)",
+        expectedExitCode: 0
+    },
+    {
+        name: "Nested unary operators",
+        input: "---42",
+        command: "./your_program.sh parse test.lox",
+        expectedOutput: "(- (- (- 42.0)))",
+        expectedExitCode: 0
+    },
+    {
+        name: "All comparison operators",
+        input: "1 < 2 <= 3 > 4 >= 5",
+        command: "./your_program.sh parse test.lox",
+        expectedOutput: "(>= (> (<= (< 1.0 2.0) 3.0) 4.0) 5.0)",
+        expectedExitCode: 0
     }
 ];
 
