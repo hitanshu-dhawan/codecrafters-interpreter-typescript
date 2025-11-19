@@ -182,10 +182,10 @@ class Parser {
 
     /**
      * Parse an assignment expression.
-     * assignment → IDENTIFIER "=" assignment | equality
+     * assignment → IDENTIFIER "=" assignment | or
      */
     private assignment(): Expr {
-        const expr = this.equality();
+        const expr = this.or();
 
         if (this.match(TokenType.EQUAL)) {
             const equals = this.previous();
@@ -197,6 +197,38 @@ class Parser {
             }
 
             this.error(equals, "Invalid assignment target.");
+        }
+
+        return expr;
+    }
+
+    /**
+     * Parse logical OR expressions.
+     * or → and ( "or" and )*
+     */
+    private or(): Expr {
+        let expr = this.and();
+
+        while (this.match(TokenType.OR)) {
+            const operator = this.previous();
+            const right = this.and();
+            expr = new Expr.Logical(expr, operator, right);
+        }
+
+        return expr;
+    }
+
+    /**
+     * Parse logical AND expressions.
+     * and → equality ( "and" equality )*
+     */
+    private and(): Expr {
+        let expr = this.equality();
+
+        while (this.match(TokenType.AND)) {
+            const operator = this.previous();
+            const right = this.equality();
+            expr = new Expr.Logical(expr, operator, right);
         }
 
         return expr;

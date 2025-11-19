@@ -71,6 +71,21 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
     }
 
     /**
+     * Visit a logical expression and handle short-circuit evaluation.
+     */
+    visitLogicalExpr(expr: Expr.Logical): any {
+        const left = this.evaluate(expr.left);
+
+        if (expr.operator.type === TokenType.OR) {
+            if (this.isTruthy(left)) return left;
+        } else {
+            if (!this.isTruthy(left)) return left;
+        }
+
+        return this.evaluate(expr.right);
+    }
+
+    /**
      * Visit a unary expression and apply the unary operator.
      */
     visitUnaryExpr(expr: Expr.Unary): any {
