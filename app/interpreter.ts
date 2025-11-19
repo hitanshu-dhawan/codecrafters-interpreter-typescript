@@ -170,6 +170,17 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
     }
 
     /**
+     * Visit an if statement and execute the appropriate branch.
+     */
+    visitIfStmt(stmt: Stmt.If): void {
+        if (this.isTruthy(this.evaluate(stmt.condition))) {
+            this.execute(stmt.thenBranch);
+        } else if (stmt.elseBranch !== null) {
+            this.execute(stmt.elseBranch);
+        }
+    }
+
+    /**
      * Visit a block statement and execute it in a new environment.
      */
     visitBlockStmt(stmt: Stmt.Block): void {

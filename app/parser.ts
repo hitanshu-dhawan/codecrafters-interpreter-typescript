@@ -110,8 +110,8 @@ class Parser {
     private statement(): Stmt {
         // if (this.match(TokenType.FOR))
         //     return this.forStatement();
-        // if (this.match(TokenType.IF))
-        //     return this.ifStatement();
+        if (this.match(TokenType.IF))
+            return this.ifStatement();
         if (this.match(TokenType.PRINT))
             return this.printStatement();
         // if (this.match(TokenType.RETURN))
@@ -122,6 +122,24 @@ class Parser {
             return new Stmt.Block(this.block());
 
         return this.expressionStatement();
+    }
+
+    /**
+     * Parse an if statement.
+     * ifStmt → "if" "(" expression ")" statement ( "else" statement )?
+     */
+    private ifStatement(): Stmt {
+        this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
+        const condition = this.expression();
+        this.consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
+
+        const thenBranch = this.statement();
+        let elseBranch: Stmt | null = null;
+        if (this.match(TokenType.ELSE)) {
+            elseBranch = this.statement();
+        }
+
+        return new Stmt.If(condition, thenBranch, elseBranch);
     }
 
     /**
