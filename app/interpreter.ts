@@ -244,6 +244,15 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
         this.environment.define(stmt.name.lexeme, value);
     }
 
+    /**
+     * Visit a while statement and execute the body while the condition is truthy.
+     */
+    visitWhileStmt(stmt: Stmt.While): void {
+        while (this.isTruthy(this.evaluate(stmt.condition))) {
+            this.execute(stmt.body);
+        }
+    }
+
     // #endregion
 
     /**
