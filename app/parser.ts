@@ -108,8 +108,8 @@ class Parser {
      * statement → exprStmt | forStmt | ifStmt | printStmt | returnStmt | whileStmt | block
      */
     private statement(): Stmt {
-        // if (this.match(TokenType.FOR))
-        //     return this.forStatement();
+        if (this.match(TokenType.FOR))
+            return this.forStatement();
         if (this.match(TokenType.IF))
             return this.ifStatement();
         if (this.match(TokenType.PRINT))
@@ -122,6 +122,67 @@ class Parser {
             return new Stmt.Block(this.block());
 
         return this.expressionStatement();
+    }
+
+    /**
+     * Parse a for statement.
+     * forStmt → "for" "(" ( varDecl | exprStmt | ";" ) expression? ";" expression? ")" statement
+     * 
+     * Desugars the for loop into a while loop:
+     * for (initializer; condition; increment) { body }
+     * becomes:
+     * { initializer; while (condition) { body; increment; } }
+     */
+    private forStatement(): Stmt {
+        this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'for'.");
+
+        let initializer: Stmt | null;
+        if (this.match(TokenType.SEMICOLON)) {
+            // No initializer
+            initializer = null;
+        } else if (this.match(TokenType.VAR)) {
+            // varDecl initializer
+            initializer = this.varDeclaration();
+        } else {
+            // exprStmt initializer
+            initializer = this.expressionStatement();
+        }
+
+        // Loop condition
+        let condition: Expr | null = null;
+        if (!this.check(TokenType.SEMICOLON)) {
+            condition = this.expression();
+        }
+        this.consume(TokenType.SEMICOLON, "Expect ';' after loop condition.");
+
+        let increment: Expr | null = null;
+        if (!this.check(TokenType.RIGHT_PAREN)) {
+            increment = this.expression();
+        }
+
+        this.consume(TokenType.RIGHT_PAREN, "Expect ')' after for clauses.");
+        let body = this.statement();
+
+        // Desugar the for loop into a while loop
+        if (increment !== null) {
+            body = new Stmt.Block([
+                body,
+                new Stmt.Expression(increment)
+            ]);
+        }
+
+        if (condition === null)
+            condition = new Expr.Literal(true);
+        body = new Stmt.While(condition, body);
+
+        if (initializer !== null) {
+            body = new Stmt.Block([
+                initializer,
+                body
+            ]);
+        }
+
+        return body;
     }
 
     /**
