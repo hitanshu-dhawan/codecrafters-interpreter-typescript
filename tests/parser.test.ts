@@ -275,7 +275,7 @@ const parserTests = [
         command: "./your_program.sh parse test.lox",
         expectedOutput: "",
         expectedExitCode: 65,
-        expectedStderr: "[line 1] Error at 'foo': Expect expression."
+        expectedStderr: "[line 1] Error at end: Expect ')' after expression."
     },
     {
         name: "Missing right operand",
