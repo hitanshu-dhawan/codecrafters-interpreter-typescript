@@ -4,6 +4,21 @@ import type Interpreter from './interpreter.js';
 import Environment from './environment.js';
 
 /**
+ * Exception class used for control flow to implement return statements.
+ * When a return statement is executed, this exception is thrown to unwind the call stack
+ * and return the value to the caller.
+ */
+export class Return extends Error {
+    readonly value: any;
+
+    constructor(value: any) {
+        super();
+        this.value = value;
+        this.name = 'Return';
+    }
+}
+
+/**
  * Represents a user-defined function in Lox.
  */
 class LoxFunction implements LoxCallable {
@@ -57,7 +72,7 @@ class LoxFunction implements LoxCallable {
      * 
      * @param interpreter The interpreter instance executing the function
      * @param args The argument values passed to the function
-     * @returns null (nil in Lox) - return values will be added later
+     * @returns The return value from the function, or null if no return statement executed
      */
     call(interpreter: Interpreter, args: any[]): any {
         const environment = new Environment(interpreter.globals);
@@ -65,7 +80,14 @@ class LoxFunction implements LoxCallable {
             environment.define(this.declaration.params[i].lexeme, args[i]);
         }
 
-        interpreter.executeBlock(this.declaration.body, environment);
+        try {
+            interpreter.executeBlock(this.declaration.body, environment);
+        } catch (returnValue) {
+            if (returnValue instanceof Return) {
+                return returnValue.value;
+            }
+            throw returnValue;
+        }
         return null;
     }
 

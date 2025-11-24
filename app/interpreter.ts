@@ -4,7 +4,7 @@ import Token from './token.js';
 import TokenType from './token-type.js';
 import Lox from './lox.js';
 import Environment from './environment.js';
-import LoxFunction from './lox-function.js';
+import LoxFunction, { Return } from './lox-function.js';
 
 import type LoxCallable from './lox-callable.js';
 
@@ -293,6 +293,18 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
     visitPrintStmt(stmt: Stmt.Print): void {
         const value = this.evaluate(stmt.expression);
         console.log(this.stringify(value));
+    }
+
+    /**
+     * Visit a return statement and throw a Return exception with the return value.
+     */
+    visitReturnStmt(stmt: Stmt.Return): void {
+        let value: any = null;
+        if (stmt.value !== null) {
+            value = this.evaluate(stmt.value);
+        }
+
+        throw new Return(value);
     }
 
     /**

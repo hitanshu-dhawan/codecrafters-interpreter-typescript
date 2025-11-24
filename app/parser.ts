@@ -144,8 +144,8 @@ class Parser {
             return this.ifStatement();
         if (this.match(TokenType.PRINT))
             return this.printStatement();
-        // if (this.match(TokenType.RETURN))
-        //     return this.returnStatement();
+        if (this.match(TokenType.RETURN))
+            return this.returnStatement();
         if (this.match(TokenType.WHILE))
             return this.whileStatement();
         if (this.match(TokenType.LEFT_BRACE))
@@ -241,6 +241,21 @@ class Parser {
         const value = this.expression();
         this.consume(TokenType.SEMICOLON, "Expect ';' after value.");
         return new Stmt.Print(value);
+    }
+
+    /**
+     * Parse a return statement.
+     * returnStmt → "return" expression? ";"
+     */
+    private returnStatement(): Stmt {
+        const keyword = this.previous();
+        let value: Expr | null = null;
+        if (!this.check(TokenType.SEMICOLON)) {
+            value = this.expression();
+        }
+
+        this.consume(TokenType.SEMICOLON, "Expect ';' after return value.");
+        return new Stmt.Return(keyword, value);
     }
 
     /**
