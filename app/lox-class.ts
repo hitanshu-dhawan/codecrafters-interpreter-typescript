@@ -1,5 +1,6 @@
 import type LoxCallable from './lox-callable.js';
 import type Interpreter from './interpreter.js';
+import LoxFunction from './lox-function.js';
 import LoxInstance from './lox-instance.js';
 
 /**
@@ -7,9 +8,11 @@ import LoxInstance from './lox-instance.js';
  */
 class LoxClass implements LoxCallable {
     readonly name: string;
+    private readonly methods: Map<string, LoxFunction>;
 
-    constructor(name: string) {
+    constructor(name: string, methods: Map<string, LoxFunction>) {
         this.name = name;
+        this.methods = methods;
     }
 
     /**
@@ -30,6 +33,19 @@ class LoxClass implements LoxCallable {
     call(interpreter: Interpreter, args: any[]): any {
         const instance = new LoxInstance(this);
         return instance;
+    }
+
+    /**
+     * Find a method by name in this class.
+     * 
+     * @param name The name of the method to find
+     * @returns The method if found, null otherwise
+     */
+    findMethod(name: string): LoxFunction | null {
+        if (this.methods.has(name)) {
+            return this.methods.get(name)!;
+        }
+        return null;
     }
 
     /**

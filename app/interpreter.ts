@@ -300,7 +300,14 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
      */
     visitClassStmt(stmt: Stmt.Class): void {
         this.environment.define(stmt.name.lexeme, null);
-        const klass = new LoxClass(stmt.name.lexeme);
+
+        const methods = new Map<string, LoxFunction>();
+        for (const method of stmt.methods) {
+            const func = new LoxFunction(method, this.environment);
+            methods.set(method.name.lexeme, func);
+        }
+
+        const klass = new LoxClass(stmt.name.lexeme, methods);
         this.environment.assign(stmt.name, klass);
     }
 
