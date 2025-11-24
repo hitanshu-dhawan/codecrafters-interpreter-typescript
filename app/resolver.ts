@@ -195,7 +195,8 @@ class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
     private resolveLocal(expr: Expr, name: Token): void {
         for (let i = this.scopes.length - 1; i >= 0; i--) {
             if (this.scopes[i].has(name.lexeme)) {
-                this.interpreter.resolve(expr, this.scopes.length - 1 - i);
+                // TODO
+                // this.interpreter.resolve(expr, this.scopes.length - 1 - i);
                 return;
             }
         }
