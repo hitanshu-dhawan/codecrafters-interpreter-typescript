@@ -244,7 +244,7 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
      * Visit a function declaration statement and define the function in the environment.
      */
     visitFunctionStmt(stmt: Stmt.Function): void {
-        const func = new LoxFunction(stmt);
+        const func = new LoxFunction(stmt, this.environment);
         this.environment.define(stmt.name.lexeme, func);
     }
 

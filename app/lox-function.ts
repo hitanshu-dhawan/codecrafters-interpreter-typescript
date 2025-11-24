@@ -23,10 +23,14 @@ export class Return extends Error {
  */
 class LoxFunction implements LoxCallable {
 
+    /** The function declaration AST node containing parameters and body */
     private readonly declaration: Stmt.Function;
+    /** The environment where the function was declared (captures lexical scope for closures) */
+    private readonly closure: Environment;
 
-    constructor(declaration: Stmt.Function) {
+    constructor(declaration: Stmt.Function, closure: Environment) {
         this.declaration = declaration;
+        this.closure = closure;
     }
 
     /**
@@ -75,7 +79,7 @@ class LoxFunction implements LoxCallable {
      * @returns The return value from the function, or null if no return statement executed
      */
     call(interpreter: Interpreter, args: any[]): any {
-        const environment = new Environment(interpreter.globals);
+        const environment = new Environment(this.closure);
         for (let i = 0; i < this.declaration.params.length; i++) {
             environment.define(this.declaration.params[i].lexeme, args[i]);
         }
