@@ -78,6 +78,21 @@ class Environment {
     }
 
     /**
+     * Assign a value to a variable at a specific distance in the environment chain.
+     * 
+     * This method is used by the resolver to optimize variable assignments. Instead of
+     * walking the chain of environments until we find the variable, we jump directly
+     * to the environment at the specified distance and assign the value there.
+     * 
+     * @param distance The number of environments to traverse up the chain (0 = current)
+     * @param name The token containing the variable name to assign to
+     * @param value The new value to assign to the variable
+     */
+    assignAt(distance: number, name: Token, value: any): void {
+        this.ancestor(distance).values.set(name.lexeme, value);
+    }
+
+    /**
      * Retrieve the value of a variable.
      * 
      * Looks up the variable by name in the environment's symbol table.
@@ -101,6 +116,40 @@ class Environment {
 
         // Variable not found in any scope - throw a runtime error
         throw new RuntimeError(name, `Undefined variable '${name.lexeme}'.`);
+    }
+
+    /**
+     * Retrieve the value of a variable at a specific distance in the environment chain.
+     * 
+     * This method is used by the resolver to optimize variable lookups. Instead of
+     * walking the chain of environments until we find the variable, we jump directly
+     * to the environment at the specified distance and retrieve the value.
+     * 
+     * @param distance The number of environments to traverse up the chain (0 = current)
+     * @param name The name of the variable to retrieve
+     * @returns The value of the variable at the specified distance
+     */
+    getAt(distance: number, name: string): any {
+        return this.ancestor(distance).values.get(name);
+    }
+
+    /**
+     * Walk a fixed number of hops up the environment chain and return that environment.
+     * 
+     * This helper method traverses the enclosing environment chain a specific number
+     * of times. A distance of 0 returns this environment, 1 returns the enclosing
+     * environment, 2 returns the enclosing's enclosing, and so on.
+     * 
+     * @param distance The number of hops up the environment chain
+     * @returns The environment at the specified distance
+     */
+    ancestor(distance: number): Environment {
+        let environment: Environment = this;
+        for (let i = 0; i < distance; i++) {
+            environment = environment.enclosing!;
+        }
+
+        return environment;
     }
 
 }

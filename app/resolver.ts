@@ -120,7 +120,10 @@ class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
 
         this.resolveFunction(stmt, FunctionType.FUNCTION);
     }
-    private resolveFunction(func: Stmt.Function, type: FunctionType): void { // TODO
+    private resolveFunction(func: Stmt.Function, type: FunctionType): void {
+        const enclosingFunction = this.currentFunction;
+        this.currentFunction = type;
+
         this.beginScope();
         for (const param of func.params) {
             this.declare(param);
@@ -128,6 +131,8 @@ class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
         }
         this.resolve(func.body);
         this.endScope();
+
+        this.currentFunction = enclosingFunction;
     }
     visitIfStmt(stmt: Stmt.If): void {
         this.resolve(stmt.condition);
@@ -140,15 +145,38 @@ class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
         this.resolve(stmt.statements);
         this.endScope();
     }
-    visitClassStmt(stmt: Stmt.Class): void { // TODO
+    visitClassStmt(stmt: Stmt.Class): void {
+        const enclosingClass = this.currentClass;
+        this.currentClass = ClassType.CLASS;
+
         this.declare(stmt.name);
         this.define(stmt.name);
+
+        this.beginScope();
+        this.peek().set("this", true);
+        for (const method of stmt.methods) {
+            let declaration = FunctionType.METHOD;
+            if (method.name.lexeme === "init") {
+                declaration = FunctionType.INITIALIZER;
+            }
+            this.resolveFunction(method, declaration);
+        }
+        this.endScope();
+
+        this.currentClass = enclosingClass;
     }
     visitPrintStmt(stmt: Stmt.Print): void {
         this.resolve(stmt.expression);
     }
-    visitReturnStmt(stmt: Stmt.Return): void { // TODO
-        if (stmt.value != null) {
+    visitReturnStmt(stmt: Stmt.Return): void {
+        if (this.currentFunction === FunctionType.NONE) {
+            // A return statement was misplaced outside of a function.
+            Lox.error(stmt.keyword, "Can't return from top-level code.");
+        }
+        if (stmt.value !== null) {
+            if (this.currentFunction === FunctionType.INITIALIZER) {
+                Lox.error(stmt.keyword, "Can't return a value from an initializer.");
+            }
             this.resolve(stmt.value);
         }
     }
@@ -182,6 +210,9 @@ class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
         if (this.scopes.length === 0) return;
 
         const scope = this.peek();
+        if (scope.has(name.lexeme)) {
+            Lox.error(name, "Already a variable with this name in this scope.");
+        }
         scope.set(name.lexeme, false);
     }
 
@@ -195,8 +226,7 @@ class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
     private resolveLocal(expr: Expr, name: Token): void {
         for (let i = this.scopes.length - 1; i >= 0; i--) {
             if (this.scopes[i].has(name.lexeme)) {
-                // TODO
-                // this.interpreter.resolve(expr, this.scopes.length - 1 - i);
+                this.interpreter.resolve(expr, this.scopes.length - 1 - i);
                 return;
             }
         }

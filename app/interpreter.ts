@@ -40,6 +40,13 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
      */
     private environment = this.globals;
 
+    /**
+     * Mapping of expressions to their resolved scope depths.
+     * This is used to optimize variable lookups by knowing how many environments
+     * to traverse when looking up a variable's value.
+    */
+    private readonly locals = new Map<Expr, number>();
+
     constructor() {
         // Define native function "clock" in the global environment
         const clockFunction: LoxCallable = {
@@ -88,6 +95,10 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
         }
     }
 
+    resolve(expr: Expr, depth: number): void {
+        this.locals.set(expr, depth);
+    }
+
     // #region Expr.Visitor methods
 
     /**
@@ -131,7 +142,7 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
      * Visit a this expression and return the current instance.
      */
     visitThisExpr(expr: Expr.This): any {
-        return this.environment.get(expr.keyword);
+        return this.lookUpVariable(expr.keyword, expr);
     }
 
     /**
@@ -253,7 +264,7 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
      * Visit a variable expression and return its value from the environment.
      */
     visitVariableExpr(expr: Expr.Variable): any {
-        return this.environment.get(expr.name);
+        return this.lookUpVariable(expr.name, expr);
     }
 
     /**
@@ -261,7 +272,14 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
      */
     visitAssignExpr(expr: Expr.Assign): any {
         const value = this.evaluate(expr.value);
-        this.environment.assign(expr.name, value);
+
+        const distance = this.locals.get(expr);
+        if (distance !== undefined) {
+            this.environment.assignAt(distance, expr.name, value);
+        } else {
+            this.globals.assign(expr.name, value);
+        }
+
         return value;
     }
 
@@ -417,6 +435,24 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
         if (a === null && b === null) return true;
         if (a === null) return false;
         return a === b;
+    }
+
+    /**
+     * Look up a variable's value, first checking resolved local scopes, then globals.
+     * Uses the resolver's distance information to optimize lookups by jumping directly
+     * to the correct environment depth rather than walking the chain.
+     * 
+     * @param name The token representing the variable name
+     * @param expr The expression being evaluated (used as a key in the locals map)
+     * @returns The value of the variable
+     */
+    private lookUpVariable(name: Token, expr: Expr): any {
+        const distance = this.locals.get(expr);
+        if (distance !== undefined) {
+            return this.environment.getAt(distance, name.lexeme);
+        } else {
+            return this.globals.get(name);
+        }
     }
 
     /**
