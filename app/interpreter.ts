@@ -5,6 +5,8 @@ import TokenType from './token-type.js';
 import Lox from './lox.js';
 import Environment from './environment.js';
 
+import type LoxCallable from './lox-callable.js';
+
 /**
  * Runtime error class for interpreter errors.
  */
@@ -148,6 +150,37 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
 
         // Unreachable
         return null;
+    }
+
+    /**
+     * Visit a call expression and execute the function call.
+     */
+    visitCallExpr(expr: Expr.Call): any {
+        const callee = this.evaluate(expr.callee);
+
+        const args: any[] = [];
+        for (const argument of expr.args) {
+            args.push(this.evaluate(argument));
+        }
+
+        if (!this.isCallable(callee)) {
+            throw new RuntimeError(expr.paren, "Can only call functions and classes.");
+        }
+
+        const func = callee as LoxCallable;
+
+        if (args.length !== func.arity()) {
+            throw new RuntimeError(expr.paren, `Expected ${func.arity()} arguments but got ${args.length}.`);
+        }
+
+        return func.call(this, args);
+    }
+
+    /**
+     * Check if a value is callable (implements LoxCallable interface).
+     */
+    private isCallable(value: any): value is LoxCallable {
+        return value && typeof value.call === 'function' && typeof value.arity === 'function';
     }
 
     /**
