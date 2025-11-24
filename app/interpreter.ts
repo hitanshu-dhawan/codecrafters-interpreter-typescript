@@ -26,10 +26,29 @@ export class RuntimeError extends Error {
 class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
 
     /**
-     * The environment that stores variable bindings.
-     * This is the global environment for the interpreter.
+     * The global environment that stores top-level variable bindings.
+     * This holds a fixed reference to the outermost global environment.
      */
-    private environment = new Environment();
+    readonly globals = new Environment();
+
+    /**
+     * The current environment for variable bindings.
+     * This tracks the current environment and changes as we enter and exit local scopes.
+     */
+    private environment = this.globals;
+
+    constructor() {
+        // Define native function "clock" in the global environment
+        const clockFunction: LoxCallable = {
+            arity(): number {
+                return 0;
+            },
+            call(interpreter: Interpreter, args: any[]): any {
+                return Date.now() / 1000.0;
+            }
+        };
+        this.globals.define("clock", clockFunction);
+    }
 
     /**
      * Interpret an expression and return its value.
