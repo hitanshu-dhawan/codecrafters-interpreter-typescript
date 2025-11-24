@@ -5,6 +5,7 @@ import TokenType from './token-type.js';
 import Lox from './lox.js';
 import Environment from './environment.js';
 import LoxFunction, { Return } from './lox-function.js';
+import LoxClass from './lox-class.js';
 
 import type LoxCallable from './lox-callable.js';
 
@@ -264,6 +265,15 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
      */
     visitBlockStmt(stmt: Stmt.Block): void {
         this.executeBlock(stmt.statements, new Environment(this.environment));
+    }
+
+    /**
+     * Visit a class declaration statement and define the class in the environment.
+     */
+    visitClassStmt(stmt: Stmt.Class): void {
+        this.environment.define(stmt.name.lexeme, null);
+        const klass = new LoxClass(stmt.name.lexeme);
+        this.environment.assign(stmt.name, klass);
     }
 
     /**
