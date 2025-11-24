@@ -17,6 +17,11 @@ interface LoxCallable {
      * @returns The result of the call
      */
     call(interpreter: Interpreter, args: any[]): any;
+
+    /**
+     * Returns a string representation of this callable.
+     */
+    toString(): string;
 }
 
 export type { LoxCallable as default };

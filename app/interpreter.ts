@@ -4,6 +4,7 @@ import Token from './token.js';
 import TokenType from './token-type.js';
 import Lox from './lox.js';
 import Environment from './environment.js';
+import LoxFunction from './lox-function.js';
 
 import type LoxCallable from './lox-callable.js';
 
@@ -45,6 +46,9 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
             },
             call(interpreter: Interpreter, args: any[]): any {
                 return Date.now() / 1000.0;
+            },
+            toString(): string {
+                return "<native fn>";
             }
         };
         this.globals.define("clock", clockFunction);
@@ -234,6 +238,14 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
      */
     visitExpressionStmt(stmt: Stmt.Expression): void {
         this.evaluate(stmt.expression);
+    }
+
+    /**
+     * Visit a function declaration statement and define the function in the environment.
+     */
+    visitFunctionStmt(stmt: Stmt.Function): void {
+        const func = new LoxFunction(stmt);
+        this.environment.define(stmt.name.lexeme, func);
     }
 
     /**
