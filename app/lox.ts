@@ -3,6 +3,7 @@ import Scanner from './scanner.js';
 import Parser from './parser.js';
 import AstPrinter from './ast-printer.js';
 import Interpreter, { RuntimeError } from './interpreter.js';
+import Resolver from './resolver.js';
 import Token from './token.js';
 import TokenType from './token-type.js';
 
@@ -132,8 +133,15 @@ class Lox {
             // Stop if there was a syntax error
             if (this.hadError) return;
 
-            // Interpret the statements
             const interpreter = new Interpreter();
+
+            const resolver = new Resolver(interpreter);
+            resolver.resolve(statements);
+
+            // Stop if a resolution error was encountered
+            if (this.hadError) return;
+
+            // Interpret the statements
             interpreter.interpret(statements);
         }
     }
