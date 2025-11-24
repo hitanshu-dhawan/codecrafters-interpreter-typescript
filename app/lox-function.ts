@@ -27,10 +27,13 @@ class LoxFunction implements LoxCallable {
     private readonly declaration: Stmt.Function;
     /** The environment where the function was declared (captures lexical scope for closures) */
     private readonly closure: Environment;
+    /** Whether this function is an initializer (constructor) */
+    private readonly isInitializer: boolean;
 
-    constructor(declaration: Stmt.Function, closure: Environment) {
+    constructor(declaration: Stmt.Function, closure: Environment, isInitializer: boolean) {
         this.declaration = declaration;
         this.closure = closure;
+        this.isInitializer = isInitializer;
     }
 
     /**
@@ -92,6 +95,10 @@ class LoxFunction implements LoxCallable {
             }
             throw returnValue;
         }
+
+        if (this.isInitializer)
+            return this.closure.getAt(0, "this");
+
         return null;
     }
 
@@ -104,7 +111,7 @@ class LoxFunction implements LoxCallable {
     bind(instance: any): LoxFunction {
         const environment = new Environment(this.closure);
         environment.define("this", instance);
-        return new LoxFunction(this.declaration, environment);
+        return new LoxFunction(this.declaration, environment, this.isInitializer);
     }
 
     /**

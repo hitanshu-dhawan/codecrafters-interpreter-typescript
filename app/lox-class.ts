@@ -20,7 +20,9 @@ class LoxClass implements LoxCallable {
      * Currently returns 0 as we haven't implemented constructors yet.
      */
     arity(): number {
-        return 0;
+        const initializer = this.findMethod("init");
+        if (initializer === null) return 0;
+        return initializer.arity();
     }
 
     /**
@@ -32,6 +34,10 @@ class LoxClass implements LoxCallable {
      */
     call(interpreter: Interpreter, args: any[]): any {
         const instance = new LoxInstance(this);
+        const initializer = this.findMethod("init");
+        if (initializer !== null) {
+            initializer.bind(instance).call(interpreter, args);
+        }
         return instance;
     }
 
