@@ -319,7 +319,7 @@ class Parser {
 
     /**
      * Parse an assignment expression.
-     * assignment → IDENTIFIER "=" assignment | or
+     * assignment → ( call "." )? IDENTIFIER "=" assignment | or
      */
     private assignment(): Expr {
         const expr = this.or();
@@ -331,6 +331,9 @@ class Parser {
             if (expr instanceof Expr.Variable) {
                 const name = expr.name;
                 return new Expr.Assign(name, value);
+            } else if (expr instanceof Expr.Get) {
+                const get = expr;
+                return new Expr.SetExpr(get.object, get.name, value);
             }
 
             this.error(equals, "Invalid assignment target.");
@@ -451,7 +454,7 @@ class Parser {
 
     /**
      * Parse call expressions.
-     * call → primary ( "(" arguments? ")" )*
+     * call → primary ( "(" arguments? ")" | "." IDENTIFIER )*
      */
     private call(): Expr {
         let expr = this.primary();
@@ -459,6 +462,9 @@ class Parser {
         while (true) {
             if (this.match(TokenType.LEFT_PAREN)) {
                 expr = this.finishCall(expr);
+            } else if (this.match(TokenType.DOT)) {
+                const name = this.consume(TokenType.IDENTIFIER, "Expect property name after '.'.");
+                expr = new Expr.Get(expr, name);
             } else {
                 break;
             }

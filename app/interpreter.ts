@@ -6,6 +6,7 @@ import Lox from './lox.js';
 import Environment from './environment.js';
 import LoxFunction, { Return } from './lox-function.js';
 import LoxClass from './lox-class.js';
+import LoxInstance from './lox-instance.js';
 
 import type LoxCallable from './lox-callable.js';
 
@@ -112,6 +113,21 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
     }
 
     /**
+     * Visit a set expression and assign a value to a property on an instance.
+     */
+    visitSetExpr(expr: Expr.SetExpr): any {
+        const object = this.evaluate(expr.object);
+
+        if (!(object instanceof LoxInstance)) {
+            throw new RuntimeError(expr.name, "Only instances have fields.");
+        }
+
+        const value = this.evaluate(expr.value);
+        object.set(expr.name, value);
+        return value;
+    }
+
+    /**
      * Visit a unary expression and apply the unary operator.
      */
     visitUnaryExpr(expr: Expr.Unary): any {
@@ -174,6 +190,18 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
 
         // Unreachable
         return null;
+    }
+
+    /**
+     * Visit a get expression and retrieve a property from an instance.
+     */
+    visitGetExpr(expr: Expr.Get): any {
+        const object = this.evaluate(expr.object);
+        if (object instanceof LoxInstance) {
+            return object.get(expr.name);
+        }
+
+        throw new RuntimeError(expr.name, "Only instances have properties.");
     }
 
     /**
