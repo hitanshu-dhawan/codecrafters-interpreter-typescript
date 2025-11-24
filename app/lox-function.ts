@@ -96,6 +96,18 @@ class LoxFunction implements LoxCallable {
     }
 
     /**
+     * Bind this function to an instance, creating a new function with 'this' in its closure.
+     *
+     * @param instance The instance to bind to this function
+     * @returns A new LoxFunction with 'this' bound to the instance
+     */
+    bind(instance: any): LoxFunction {
+        const environment = new Environment(this.closure);
+        environment.define("this", instance);
+        return new LoxFunction(this.declaration, environment);
+    }
+
+    /**
      * Returns a string representation of this function.
      */
     toString(): string {

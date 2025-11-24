@@ -128,6 +128,13 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
     }
 
     /**
+     * Visit a this expression and return the current instance.
+     */
+    visitThisExpr(expr: Expr.This): any {
+        return this.environment.get(expr.keyword);
+    }
+
+    /**
      * Visit a unary expression and apply the unary operator.
      */
     visitUnaryExpr(expr: Expr.Unary): any {
