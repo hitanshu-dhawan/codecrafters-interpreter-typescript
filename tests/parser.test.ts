@@ -6,365 +6,317 @@ import { TestRunner } from './test-runner.js';
 const parserTests = [
     // Stage #SC2: Parsing Expressions - Booleans & Nil
     {
-        name: "Boolean true",
-        input: "true",
+        name: "[tester::#SC2] [test-1] Parsing Expressions - Booleans & Nil",
+        input: `true`,
         command: "./your_program.sh parse test.lox",
         expectedOutput: "true",
-        expectedExitCode: 0
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Boolean false",
-        input: "false",
+        name: "[tester::#SC2] [test-2] Parsing Expressions - Booleans & Nil",
+        input: `false`,
         command: "./your_program.sh parse test.lox",
         expectedOutput: "false",
-        expectedExitCode: 0
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Nil literal",
-        input: "nil",
+        name: "[tester::#SC2] [test-3] Parsing Expressions - Booleans & Nil",
+        input: `nil`,
         command: "./your_program.sh parse test.lox",
         expectedOutput: "nil",
-        expectedExitCode: 0
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
-
     // Stage #RA8: Parsing Expressions - Number literals
     {
-        name: "Integer literal",
-        input: "80",
+        name: "[tester::#RA8] [test-1] Parsing Expressions - Number literals",
+        input: `54`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "80.0",
-        expectedExitCode: 0
+        expectedOutput: "54.0",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Zero literal",
-        input: "0.0",
+        name: "[tester::#RA8] [test-2] Parsing Expressions - Number literals",
+        input: `0.0`,
         command: "./your_program.sh parse test.lox",
         expectedOutput: "0.0",
-        expectedExitCode: 0
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Decimal literal",
-        input: "61.93",
+        name: "[tester::#RA8] [test-3] Parsing Expressions - Number literals",
+        input: `33.80`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "61.93",
-        expectedExitCode: 0
+        expectedOutput: "33.8",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
-
     // Stage #TH5: Parsing Expressions - String literals
     {
-        name: "Simple string",
-        input: '"bar hello"',
+        name: "[tester::#TH5] [test-1] Parsing Expressions - String literals",
+        input: `"world hello"`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "bar hello",
-        expectedExitCode: 0
+        expectedOutput: "world hello",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "String with quotes",
-        input: "\"'baz'\"",
+        name: "[tester::#TH5] [test-2] Parsing Expressions - String literals",
+        input: `"'foo'"`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "'baz'",
-        expectedExitCode: 0
+        expectedOutput: "'foo'",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "String with comment syntax",
-        input: '"// bar"',
+        name: "[tester::#TH5] [test-3] Parsing Expressions - String literals",
+        input: `"// baz"`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "// bar",
-        expectedExitCode: 0
+        expectedOutput: "// baz",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Number as string",
-        input: '"54"',
+        name: "[tester::#TH5] [test-4] Parsing Expressions - String literals",
+        input: `"99"`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "54",
-        expectedExitCode: 0
+        expectedOutput: "99",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
-
     // Stage #XE6: Parsing Expressions - Parentheses
     {
-        name: "Grouped string",
-        input: '("foo")',
+        name: "[tester::#XE6] [test-1] Parsing Expressions - Parentheses",
+        input: `("foo")`,
         command: "./your_program.sh parse test.lox",
         expectedOutput: "(group foo)",
-        expectedExitCode: 0
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Nested grouping",
-        input: "((true))",
+        name: "[tester::#XE6] [test-2] Parsing Expressions - Parentheses",
+        input: `((true))`,
         command: "./your_program.sh parse test.lox",
         expectedOutput: "(group (group true))",
-        expectedExitCode: 0
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Grouped nil",
-        input: "(nil)",
+        name: "[tester::#XE6] [test-3] Parsing Expressions - Parentheses",
+        input: `(nil)`,
         command: "./your_program.sh parse test.lox",
         expectedOutput: "(group nil)",
-        expectedExitCode: 0
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Grouped number",
-        input: "(43.41)",
+        name: "[tester::#XE6] [test-4] Parsing Expressions - Parentheses",
+        input: `(41.22)`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "(group 43.41)",
-        expectedExitCode: 0
+        expectedOutput: "(group 41.22)",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
-
     // Stage #MQ1: Parsing Expressions - Unary Operators
     {
-        name: "Logical not",
-        input: "!true",
+        name: "[tester::#MQ1] [test-1] Parsing Expressions - Unary Operators",
+        input: `!false`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "(! true)",
-        expectedExitCode: 0
+        expectedOutput: "(! false)",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Negation",
-        input: "-21",
+        name: "[tester::#MQ1] [test-2] Parsing Expressions - Unary Operators",
+        input: `-14`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "(- 21.0)",
-        expectedExitCode: 0
+        expectedOutput: "(- 14.0)",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Double negation",
-        input: "!!false",
+        name: "[tester::#MQ1] [test-3] Parsing Expressions - Unary Operators",
+        input: `!!false`,
         command: "./your_program.sh parse test.lox",
         expectedOutput: "(! (! false))",
-        expectedExitCode: 0
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Complex unary with grouping",
-        input: "(!!(false))",
+        name: "[tester::#MQ1] [test-4] Parsing Expressions - Unary Operators",
+        input: `(!!(false))`,
         command: "./your_program.sh parse test.lox",
         expectedOutput: "(group (! (! (group false))))",
-        expectedExitCode: 0
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
-
     // Stage #WA9: Parsing Expressions - Arithmetic operators (1/2)
     {
-        name: "Multiplication and division",
-        input: "57 * 64 / 17",
+        name: "[tester::#WA9] [test-1] Parsing Expressions - Arithmetic operators (1/2)",
+        input: `94 * 32 / 88`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "(/ (* 57.0 64.0) 17.0)",
-        expectedExitCode: 0
+        expectedOutput: "(/ (* 94.0 32.0) 88.0)",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Left associative division",
-        input: "85 / 71 / 95",
+        name: "[tester::#WA9] [test-2] Parsing Expressions - Arithmetic operators (1/2)",
+        input: `18 / 45 / 39`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "(/ (/ 85.0 71.0) 95.0)",
-        expectedExitCode: 0
+        expectedOutput: "(/ (/ 18.0 45.0) 39.0)",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Complex multiplication and division",
-        input: "83 * 25 * 14 / 73",
+        name: "[tester::#WA9] [test-3] Parsing Expressions - Arithmetic operators (1/2)",
+        input: `76 * 20 * 95 / 13`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "(/ (* (* 83.0 25.0) 14.0) 73.0)",
-        expectedExitCode: 0
+        expectedOutput: "(/ (* (* 76.0 20.0) 95.0) 13.0)",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Multiplication with unary and grouping",
-        input: "(89 * -18 / (31 * 81))",
+        name: "[tester::#WA9] [test-4] Parsing Expressions - Arithmetic operators (1/2)",
+        input: `(97 * -52 / (79 * 96))`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "(group (/ (* 89.0 (- 18.0)) (group (* 31.0 81.0))))",
-        expectedExitCode: 0
+        expectedOutput: "(group (/ (* 97.0 (- 52.0)) (group (* 79.0 96.0))))",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
-
     // Stage #YF2: Parsing Expressions - Arithmetic operators (2/2)
     {
-        name: "String concatenation",
-        input: '"hello" + "world"',
+        name: "[tester::#YF2] [test-1] Parsing Expressions - Arithmetic operators (2/2)",
+        input: `"hello" + "world"`,
         command: "./your_program.sh parse test.lox",
         expectedOutput: "(+ hello world)",
-        expectedExitCode: 0
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Precedence: multiplication before subtraction",
-        input: "79 - 78 * 51 - 46",
+        name: "[tester::#YF2] [test-2] Parsing Expressions - Arithmetic operators (2/2)",
+        input: `21 - 54 * 17 - 88`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "(- (- 79.0 (* 78.0 51.0)) 46.0)",
-        expectedExitCode: 0
+        expectedOutput: "(- (- 21.0 (* 54.0 17.0)) 88.0)",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Mixed arithmetic with precedence",
-        input: "81 + 19 - 42 / 19",
+        name: "[tester::#YF2] [test-3] Parsing Expressions - Arithmetic operators (2/2)",
+        input: `24 + 91 - 68 / 81`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "(- (+ 81.0 19.0) (/ 42.0 19.0))",
-        expectedExitCode: 0
+        expectedOutput: "(- (+ 24.0 91.0) (/ 68.0 81.0))",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Complex arithmetic with grouping",
-        input: "(-38 + 62) * (55 * 72) / (62 + 65)",
+        name: "[tester::#YF2] [test-4] Parsing Expressions - Arithmetic operators (2/2)",
+        input: `(-20 + 90) * (44 * 76) / (63 + 96)`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "(/ (* (group (+ (- 38.0) 62.0)) (group (* 55.0 72.0))) (group (+ 62.0 65.0)))",
-        expectedExitCode: 0
+        expectedOutput: "(/ (* (group (+ (- 20.0) 90.0)) (group (* 44.0 76.0))) (group (+ 63.0 96.0)))",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
-
     // Stage #UH4: Parsing Expressions - Comparison operators
     {
-        name: "Greater than",
-        input: "86 > 70",
+        name: "[tester::#UH4] [test-1] Parsing Expressions - Comparison operators",
+        input: `10 > -10`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "(> 86.0 70.0)",
-        expectedExitCode: 0
+        expectedOutput: "(> 10.0 (- 10.0))",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Less than or equal",
-        input: "16 <= 102",
+        name: "[tester::#UH4] [test-2] Parsing Expressions - Comparison operators",
+        input: `20 <= 30`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "(<= 16.0 102.0)",
-        expectedExitCode: 0
+        expectedOutput: "(<= 20.0 30.0)",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Chained comparison",
-        input: "86 < 102 < 118",
+        name: "[tester::#UH4] [test-3] Parsing Expressions - Comparison operators",
+        input: `10 < 30 < 50`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "(< (< 86.0 102.0) 118.0)",
-        expectedExitCode: 0
+        expectedOutput: "(< (< 10.0 30.0) 50.0)",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Complex comparison with arithmetic",
-        input: "(74 - 54) >= -(14 / 40 + 83)",
+        name: "[tester::#UH4] [test-4] Parsing Expressions - Comparison operators",
+        input: `(29 - 16) >= -(67 / 76 + 39)`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "(>= (group (- 74.0 54.0)) (- (group (+ (/ 14.0 40.0) 83.0))))",
-        expectedExitCode: 0
+        expectedOutput: "(>= (group (- 29.0 16.0)) (- (group (+ (/ 67.0 76.0) 39.0))))",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
-
     // Stage #HT8: Parsing Expressions - Equality operators
     {
-        name: "String inequality",
-        input: '"world"!="foo"',
+        name: "[tester::#HT8] [test-1] Parsing Expressions - Equality operators",
+        input: `"world"!="foo"`,
         command: "./your_program.sh parse test.lox",
         expectedOutput: "(!= world foo)",
-        expectedExitCode: 0
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "String equality",
-        input: '"hello" == "hello"',
+        name: "[tester::#HT8] [test-2] Parsing Expressions - Equality operators",
+        input: `"bar" == "bar"`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "(== hello hello)",
-        expectedExitCode: 0
+        expectedOutput: "(== bar bar)",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Number equality",
-        input: "39 == 50",
+        name: "[tester::#HT8] [test-3] Parsing Expressions - Equality operators",
+        input: `39 == 21`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "(== 39.0 50.0)",
-        expectedExitCode: 0
+        expectedOutput: "(== 39.0 21.0)",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
     {
-        name: "Complex equality with comparison",
-        input: "(16 != 88) == ((-35 + 29) >= (68 * 36))",
+        name: "[tester::#HT8] [test-4] Parsing Expressions - Equality operators",
+        input: `(34 != 90) == ((-37 + 45) >= (22 * 47))`,
         command: "./your_program.sh parse test.lox",
-        expectedOutput: "(== (group (!= 16.0 88.0)) (group (>= (group (+ (- 35.0) 29.0)) (group (* 68.0 36.0)))))",
-        expectedExitCode: 0
+        expectedOutput: "(== (group (!= 34.0 90.0)) (group (>= (group (+ (- 37.0) 45.0)) (group (* 22.0 47.0)))))",
+        expectedExitCode: 0,
+        expectedStderr: ""
     },
-
     // Stage #WZ8: Parsing Expressions - Syntactic errors
     {
-        name: "Unterminated string error",
-        input: '"hello',
+        name: "[tester::#WZ8] [test-1] Parsing Expressions - Syntactic errors",
+        input: `"world`,
         command: "./your_program.sh parse test.lox",
         expectedOutput: "",
         expectedExitCode: 65,
         expectedStderr: "[line 1] Error: Unterminated string.\n[line 1] Error at end: Expect expression."
     },
     {
-        name: "Invalid token in parentheses",
-        input: "(foo",
+        name: "[tester::#WZ8] [test-2] Parsing Expressions - Syntactic errors",
+        input: `(foo`,
         command: "./your_program.sh parse test.lox",
         expectedOutput: "",
         expectedExitCode: 65,
         expectedStderr: "[line 1] Error at end: Expect ')' after expression."
     },
     {
-        name: "Missing right operand",
-        input: "(53 +)",
+        name: "[tester::#WZ8] [test-3] Parsing Expressions - Syntactic errors",
+        input: `(31 +)`,
         command: "./your_program.sh parse test.lox",
         expectedOutput: "",
         expectedExitCode: 65,
         expectedStderr: "[line 1] Error at ')': Expect expression."
     },
     {
-        name: "Invalid start token",
-        input: "+",
+        name: "[tester::#WZ8] [test-4] Parsing Expressions - Syntactic errors",
+        input: `+`,
         command: "./your_program.sh parse test.lox",
         expectedOutput: "",
         expectedExitCode: 65,
         expectedStderr: "[line 1] Error at '+': Expect expression."
-    },
-
-    {
-        name: "Empty grouping",
-        input: "()",
-        command: "./your_program.sh parse test.lox",
-        expectedOutput: "",
-        expectedExitCode: 65,
-        expectedStderr: "[line 1] Error at ')': Expect expression."
-    },
-    {
-        name: "Multiple operators without operands",
-        input: "* /",
-        command: "./your_program.sh parse test.lox",
-        expectedOutput: "",
-        expectedExitCode: 65,
-        expectedStderr: "[line 1] Error at '*': Expect expression."
-    },
-    {
-        name: "Complex nested grouping",
-        input: "(((42)))",
-        command: "./your_program.sh parse test.lox",
-        expectedOutput: "(group (group (group 42.0)))",
-        expectedExitCode: 0
-    },
-    {
-        name: "Mixed operators with correct precedence",
-        input: "2 + 3 * 4 - 5 / 2",
-        command: "./your_program.sh parse test.lox",
-        expectedOutput: "(- (+ 2.0 (* 3.0 4.0)) (/ 5.0 2.0))",
-        expectedExitCode: 0
-    },
-    {
-        name: "Unary operators with grouping",
-        input: "-(2 + 3)",
-        command: "./your_program.sh parse test.lox",
-        expectedOutput: "(- (group (+ 2.0 3.0)))",
-        expectedExitCode: 0
-    },
-    {
-        name: "Multiple comparison operators",
-        input: "1 < 2 == 3 > 4",
-        command: "./your_program.sh parse test.lox",
-        expectedOutput: "(== (< 1.0 2.0) (> 3.0 4.0))",
-        expectedExitCode: 0
-    },
-    {
-        name: "String concatenation with empty string",
-        input: '"hello" + ""',
-        command: "./your_program.sh parse test.lox",
-        expectedOutput: "(+ hello )",
-        expectedExitCode: 0
-    },
-    {
-        name: "Complex boolean expression",
-        input: "!true == false",
-        command: "./your_program.sh parse test.lox",
-        expectedOutput: "(== (! true) false)",
-        expectedExitCode: 0
-    },
-    {
-        name: "Nested unary operators",
-        input: "---42",
-        command: "./your_program.sh parse test.lox",
-        expectedOutput: "(- (- (- 42.0)))",
-        expectedExitCode: 0
-    },
-    {
-        name: "All comparison operators",
-        input: "1 < 2 <= 3 > 4 >= 5",
-        command: "./your_program.sh parse test.lox",
-        expectedOutput: "(>= (> (<= (< 1.0 2.0) 3.0) 4.0) 5.0)",
-        expectedExitCode: 0
     }
 ];
 
