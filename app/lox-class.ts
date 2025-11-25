@@ -8,10 +8,12 @@ import LoxInstance from './lox-instance.js';
  */
 class LoxClass implements LoxCallable {
     readonly name: string;
+    readonly superclass: LoxClass | null;
     private readonly methods: Map<string, LoxFunction>;
 
-    constructor(name: string, methods: Map<string, LoxFunction>) {
+    constructor(name: string, superclass: LoxClass | null, methods: Map<string, LoxFunction>) {
         this.name = name;
+        this.superclass = superclass;
         this.methods = methods;
     }
 
