@@ -157,11 +157,18 @@ class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
         }
 
         if (stmt.superclass != null) {
+            this.currentClass = ClassType.SUBCLASS;
             this.resolve(stmt.superclass);
+        }
+
+        if (stmt.superclass != null) {
+            this.beginScope();
+            this.peek().set("super", true);
         }
 
         this.beginScope();
         this.peek().set("this", true);
+
         for (const method of stmt.methods) {
             let declaration = FunctionType.METHOD;
             if (method.name.lexeme === "init") {
@@ -169,7 +176,11 @@ class Resolver implements Expr.Visitor<void>, Stmt.Visitor<void> {
             }
             this.resolveFunction(method, declaration);
         }
+
         this.endScope();
+
+        if (stmt.superclass != null)
+            this.endScope();
 
         this.currentClass = enclosingClass;
     }

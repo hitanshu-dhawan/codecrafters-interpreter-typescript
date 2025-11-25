@@ -139,6 +139,24 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
     }
 
     /**
+     * Visit a super expression and retrieve a method from the superclass.
+     */
+    visitSuperExpr(expr: Expr.Super): any {
+        const distance = this.locals.get(expr)!;
+        const superclass = this.environment.getAt(distance, "super") as LoxClass;
+
+        const object = this.environment.getAt(distance - 1, "this") as LoxInstance;
+
+        const method = superclass.findMethod(expr.method.lexeme);
+
+        if (method === null) {
+            throw new RuntimeError(expr.method, `Undefined property '${expr.method.lexeme}'.`);
+        }
+
+        return method.bind(object);
+    }
+
+    /**
      * Visit a this expression and return the current instance.
      */
     visitThisExpr(expr: Expr.This): any {
@@ -335,6 +353,11 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
 
         this.environment.define(stmt.name.lexeme, null);
 
+        if (stmt.superclass != null) {
+            this.environment = new Environment(this.environment);
+            this.environment.define("super", superclass);
+        }
+
         const methods = new Map<string, LoxFunction>();
         for (const method of stmt.methods) {
             const func = new LoxFunction(method, this.environment, method.name.lexeme === "init");
@@ -342,6 +365,11 @@ class Interpreter implements Expr.Visitor<any>, Stmt.Visitor<void> {
         }
 
         const klass = new LoxClass(stmt.name.lexeme, superclass as LoxClass, methods);
+
+        if (superclass != null) {
+            this.environment = this.environment.enclosing;
+        }
+
         this.environment.assign(stmt.name, klass);
     }
 
